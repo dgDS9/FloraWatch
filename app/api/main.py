@@ -71,6 +71,11 @@ def startup_event() -> None:
     labels = load_label_mapping(LABELS_PATH)
 
 
+@app.get("/")
+def root() -> Dict[str, str]:
+    return {"message": "FloraWatch API is running"}
+
+
 @app.get("/health")
 def health() -> Dict[str, str]:
     return {"status": "ok"}
