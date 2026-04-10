@@ -13,8 +13,9 @@ from PIL import Image
 
 
 # ---------- Config ----------
-MODEL_PATH = Path("models/best_model.keras")
-MAPPING_CSV = Path("models/label_mapping.csv")
+BASE_DIR = Path(__file__).resolve().parents[2]   # geht von app/api/main.py zum Repo-Root
+MODEL_PATH = BASE_DIR / "models" / "best_model.keras"
+LABELS_PATH = BASE_DIR / "models" / "label_mapping.csv"
 IMG_SIZE = 224
 DEFAULT_THRESHOLD = 0.60
 
