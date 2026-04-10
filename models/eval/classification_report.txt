@@ -1,0 +1,29 @@
+                         precision    recall  f1-score   support
+
+     Alocasia amazonica     0.7973    0.8194    0.8082        72
+              Aloe vera     0.8261    0.9048    0.8636        63
+   Anthurium andraeanum     0.9474    0.9000    0.9231        60
+        Asplenium nidus     0.8841    0.8841    0.8841        69
+   Chlorophytum comosum     0.8857    0.8732    0.8794        71
+    Codiaeum variegatum     0.8690    0.9012    0.8848        81
+         Crassula ovata     0.9254    0.7654    0.8378        81
+  Dieffenbachia seguine     0.9559    0.9286    0.9420        70
+       Dypsis lutescens     0.9565    0.8919    0.9231        74
+      Epipremnum aureum     0.7027    0.7123    0.7075        73
+        Ficus benjamina     0.6897    0.6061    0.6452        66
+         Ficus elastica     0.7500    0.8108    0.7792        74
+           Hedera helix     0.8824    0.8451    0.8633        71
+           Hoya carnosa     0.8594    0.7746    0.8148        71
+     Monstera deliciosa     0.9167    0.9167    0.9167        72
+       Pachira aquatica     0.9275    0.7901    0.8533        81
+  Peperomia obtusifolia     0.5556    0.7500    0.6383        40
+Philodendron hederaceum     0.6064    0.8028    0.6909        71
+Sansevieria trifasciata     0.8939    0.7867    0.8369        75
+  Schefflera arboricola     0.7564    0.8082    0.7815        73
+ Spathiphyllum wallisii     0.8929    0.9091    0.9009        55
+   Tradescantia zebrina     0.9306    0.9437    0.9371        71
+     Yucca elephantipes     0.8451    0.8696    0.8571        69
+
+               accuracy                         0.8347      1603
+              macro avg     0.8372    0.8345    0.8334      1603
+           weighted avg     0.8430    0.8347    0.8366      1603

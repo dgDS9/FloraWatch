@@ -1,0 +1,16 @@
+true_label,pred_label,count
+Epipremnum aureum,Philodendron hederaceum,12
+Ficus benjamina,Ficus elastica,8
+Alocasia amazonica,Philodendron hederaceum,6
+Ficus benjamina,Schefflera arboricola,6
+Hoya carnosa,Peperomia obtusifolia,6
+Crassula ovata,Peperomia obtusifolia,5
+Ficus elastica,Ficus benjamina,5
+Pachira aquatica,Ficus elastica,5
+Crassula ovata,Ficus benjamina,4
+Pachira aquatica,Epipremnum aureum,4
+Philodendron hederaceum,Epipremnum aureum,4
+Schefflera arboricola,Peperomia obtusifolia,4
+Anthurium andraeanum,Philodendron hederaceum,3
+Asplenium nidus,Chlorophytum comosum,3
+Crassula ovata,Schefflera arboricola,3
