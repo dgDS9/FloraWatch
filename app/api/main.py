@@ -37,8 +37,8 @@ model: tf.keras.Model | None = None
 labels: List[str] | None = None
 
 
-def load_label_mapping(mapping_csv: Path) -> List[str]:
-    df = pd.read_csv(mapping_csv, encoding="utf-8")
+def load_label_mapping(LABELS_PATH: Path) -> List[str]:
+    df = pd.read_csv(LABELS_PATH, encoding="utf-8")
     if not {"class_index", "species"}.issubset(df.columns):
         raise ValueError("label_mapping.csv must contain columns: class_index, species")
     df = df.sort_values("class_index")
@@ -64,11 +64,11 @@ def startup_event() -> None:
     global model, labels
     if not MODEL_PATH.exists():
         raise FileNotFoundError(f"Model not found: {MODEL_PATH}")
-    if not MAPPING_CSV.exists():
-        raise FileNotFoundError(f"Label mapping not found: {MAPPING_CSV}")
+    if not LABELS_PATH.exists():
+        raise FileNotFoundError(f"Label mapping not found: {LABELS_PATH}")
 
     model = tf.keras.models.load_model(MODEL_PATH)
-    labels = load_label_mapping(MAPPING_CSV)
+    labels = load_label_mapping(LABELS_PATH)
 
 
 @app.get("/health")
