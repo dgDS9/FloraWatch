@@ -96,7 +96,9 @@ def warmup() -> Dict[str, str]:
         _ = model.predict(dummy, verbose=0)
     return {"status": "warmed"}
 
-
+@app.get("/version")
+def version():
+    return {"version": "warmup-commit-1"}
 
 @app.post("/predict")
 async def predict(
