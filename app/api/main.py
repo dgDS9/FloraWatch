@@ -71,6 +71,10 @@ def startup_event() -> None:
     labels = load_label_mapping(LABELS_PATH)
 
 
+@app.head("/")
+def root_head():
+    return
+
 @app.get("/")
 def root() -> Dict[str, str]:
     return {"message": "FloraWatch API is running"}
@@ -79,6 +83,19 @@ def root() -> Dict[str, str]:
 @app.get("/health")
 def health() -> Dict[str, str]:
     return {"status": "ok"}
+
+
+@app.get("/warmup")
+def warmup() -> Dict[str, str]:
+    """
+    Lightweight endpoint to wake up the service and warm up TensorFlow.
+    Useful for Render free-tier cold starts.
+    """
+    if model is not None:
+        dummy = np.zeros((1, IMG_SIZE, IMG_SIZE, 3), dtype=np.float32)
+        _ = model.predict(dummy, verbose=0)
+    return {"status": "warmed"}
+
 
 
 @app.post("/predict")
