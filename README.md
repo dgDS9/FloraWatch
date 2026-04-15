@@ -1,11 +1,9 @@
-
-
 A small ML portfolio project: classify common **houseplants** from a photo.
 
 ## What it does
 - User uploads/takes a photo of a plant
 - Model predicts the plant species
-- UI shows **Top-1** prediction and an optional, always-available **Top-3** list (“Weitere Vorschläge anzeigen”)
+- UI shows an **always-available Top-3** list (user decides which one matches best)
 - If the model is unsure: returns **Unknown** using a probability threshold
 
 ---
@@ -59,11 +57,7 @@ These confusions are expected: the pairs are visually similar (leaf shape/textur
 ## Inference output & “Unknown” handling
 The model outputs a probability distribution over 23 classes (softmax).
 From that distribution:
-- **Top-1** = max probability class
-- **Top-3** = three highest probabilities
-- **Unknown rule**: if `max_prob < 0.60` → return `"Unbekannte Pflanze"`
+- **Top-3** = three highest probabilities (always returned)
+- **Unknown rule**: if `max_prob < 0.4` → return `"Unbekannte Pflanze"`
 
----
-
-
-
+Note: The frontend focuses on presenting **Top-3 suggestions** so the user can validate the prediction themselves, especially for visually similar plant species.
