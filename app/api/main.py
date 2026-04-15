@@ -24,10 +24,10 @@ DEFAULT_THRESHOLD = 0.40
 app = FastAPI(title="Plant Recognition API", version="1.0")
 
 
-# CORS: später für React anpassen (z.B. http://localhost:5173)
+# CORS: später für React anpassen 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://pablomedito.github.io/FloraWatchFrontend/"],  # im Produktivbetrieb einschränken!
+    allow_origins=["https://pablomedito.github.io"],  # im Produktivbetrieb einschränken!
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
