@@ -1,5 +1,13 @@
 A small ML portfolio project: classify common **houseplants** from a photo.
 
+## Frontend
+
+The frontend is available here:
+🌿[pablomedito.github.io/FloraWatchFrontend](https://pablomedito.github.io/FloraWatchFrontend/)🌿
+
+ More information about the frontend, and its functionalities can be found in the frontend repository:   
+https://github.com/PabloMediTo/FloraWatchFrontend 
+
 ## What it does
 - User uploads/takes a photo of a plant
 - Model predicts the plant species
