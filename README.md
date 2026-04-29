@@ -4,8 +4,6 @@ A small ML portfolio project for classifying common **houseplants** from a photo
 
 FloraWatch combines a mobile-first React frontend with a TensorFlow/Keras machine learning backend. Users can take or upload a plant photo, receive model predictions, review the Top-3 suggestions, and access plant care information, fun facts, and toxicity warnings.
 
-🔗 **Live Demo:** [pablomedito.github.io/FloraWatchFrontend](https://pablomedito.github.io/FloraWatchFrontend/)
-
 ![React](https://img.shields.io/badge/React-19-blue)
 ![Vite](https://img.shields.io/badge/Vite-6-purple)
 ![PWA](https://img.shields.io/badge/PWA-ready-green)
