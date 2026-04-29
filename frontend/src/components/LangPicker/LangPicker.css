@@ -1,0 +1,42 @@
+.lang-picker {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(45, 90, 52, 0.08);
+  z-index: 10;
+}
+
+.lang-btn {
+  padding: 4px 9px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: rgba(45, 90, 52, 0.5);
+  cursor: pointer;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+  color: rgba(45, 90, 52, 0.8);
+}
+
+.lang-btn:focus {
+  outline: none;
+}
+
+.lang-btn--active,
+.lang-btn--active:hover,
+.lang-btn--active:focus {
+  background: #2D5A34;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(45, 90, 52, 0.3);
+}

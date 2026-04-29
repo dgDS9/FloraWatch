@@ -1,0 +1,216 @@
+/* -------------------------------------------------- */
+/*  Global styles – Florawatch                         */
+/* -------------------------------------------------- */
+
+/* Font loaded via <link> in index.html for non-blocking render */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --sky: #FFF8F0;
+  --sky-deep: #FFF8F0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+body {
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(175deg, var(--sky) 0%, var(--sky-deep) 100%);
+  min-height: 100dvh;
+}
+
+/* App layout */
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100dvh;
+  padding: 24px 16px 32px;
+  gap: 18px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* Title */
+.app-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #1a3a1a;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  user-select: none;
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  gap: 8px;
+}
+
+.title-icon {
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.title-accent {
+  color: #3d8b3d;
+}
+
+/* Info button – fixed top-left corner */
+.info-btn-corner {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, box-shadow 0.2s;
+  z-index: 100;
+}
+
+.info-btn-corner:hover {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Scanner area wrapper – holds camera + vines */
+.scanner-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 0 28px;
+  overflow: visible;
+}
+
+/* Action / result area */
+.action-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+  margin-top: 4px;
+}
+
+.scan-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.upload-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(61, 139, 61, 0.25);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.upload-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(61, 139, 61, 0.5);
+}
+
+.upload-input {
+  display: none;
+}
+
+/* Subtle animated background blobs for depth */
+.app::before,
+.app::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.25;
+  will-change: transform;
+}
+
+.app::before {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #b8e6b8, transparent 70%);
+  top: -60px;
+  right: -80px;
+  animation: float-blob 12s ease-in-out infinite;
+}
+
+.app::after {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, #d4eaf7, transparent 70%);
+  bottom: 40px;
+  left: -60px;
+  animation: float-blob 15s ease-in-out infinite reverse;
+}
+
+@keyframes float-blob {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+}
+
+/* Disable expensive effects and animations on mobile */
+@media (max-width: 480px) {
+  .app::before,
+  .app::after {
+    animation: none;
+  }
+
+  .upload-btn {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app::before,
+  .app::after {
+    animation: none;
+  }
+}
+
+/* Responsive tweaks for very small screens */
+@media (max-height: 640px) {
+  .app {
+    padding-top: 12px;
+    gap: 12px;
+  }
+  .app-title {
+    font-size: 1.6rem;
+  }
+}

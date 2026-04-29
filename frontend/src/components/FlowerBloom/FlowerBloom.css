@@ -1,0 +1,32 @@
+.flower-layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.flower-layer-left {
+  left: -1px;
+}
+
+.flower-layer-right {
+  right: -1px;
+}
+
+.flower {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flower-sparkle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(253, 230, 138, 0.7), transparent 70%);
+  pointer-events: none;
+}

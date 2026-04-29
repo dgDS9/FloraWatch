@@ -1,0 +1,138 @@
+.options-card {
+  width: 100%;
+  max-width: 340px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 22px 24px 20px;
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+.options-title {
+  margin: 0 0 4px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1a3a1a;
+  line-height: 1.2;
+}
+
+.options-subtitle {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #374151;
+  margin: 0 0 18px;
+}
+
+.options-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.options-item {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  row-gap: 3px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 6px 4px;
+  margin: -6px -4px;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.options-item:active {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.options-rank {
+  grid-row: 1 / 3;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #166534;
+  justify-self: center;
+}
+
+.options-name {
+  grid-column: 2;
+  grid-row: 1;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #1a3a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.options-search-icon {
+  margin-left: 4px;
+  vertical-align: middle;
+  opacity: 0.5;
+}
+
+.options-item:hover .options-search-icon {
+  opacity: 1;
+}
+
+.options-pct {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #166534;
+  white-space: nowrap;
+}
+
+.options-bar-track {
+  grid-column: 2;
+  grid-row: 2;
+  height: 6px;
+  border-radius: 3px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.options-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+}
+
+.options-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 28px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #5ba65b, #3d8b3d);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(59, 130, 59, 0.3);
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s;
+}
+
+.options-dismiss:active {
+  background: linear-gradient(135deg, #4e944e, #357035);
+}

@@ -1,0 +1,130 @@
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.confirm-modal {
+  width: 100%;
+  max-width: 320px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.2));
+  overflow: hidden;
+}
+
+.confirm-plant-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1a3a1a;
+  margin: 0 0 4px;
+}
+
+.confirm-common-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0 16px;
+}
+
+.confirm-img-wrap {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(45, 90, 52, 0.1);
+}
+
+.confirm-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.confirm-img--hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.confirm-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #22c55e;
+  border-radius: 50%;
+  animation: confirmSpin 0.8s linear infinite;
+}
+
+@keyframes confirmSpin {
+  to { transform: rotate(360deg); }
+}
+
+.confirm-no-image {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  color: #9ca3af;
+  margin: 0;
+  padding: 12px;
+}
+
+.confirm-question {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 0 0 16px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-btn {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s;
+}
+
+.confirm-btn--yes {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: white;
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+.confirm-btn--yes:active {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.confirm-btn--no {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.confirm-btn--no:active {
+  background: #e5e7eb;
+}

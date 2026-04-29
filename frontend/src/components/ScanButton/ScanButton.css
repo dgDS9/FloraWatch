@@ -1,0 +1,39 @@
+.scan-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 36px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #5ba65b, #3d8b3d);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow:
+    0 4px 16px rgba(59, 130, 59, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.scan-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.scan-button:active:not(:disabled) {
+  background: linear-gradient(135deg, #4e944e, #357035);
+}
+
+.scan-button-icon {
+  font-size: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+}

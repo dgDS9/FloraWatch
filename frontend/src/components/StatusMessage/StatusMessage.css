@@ -1,0 +1,52 @@
+.status-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  min-height: 38px;
+  flex-wrap: wrap;
+}
+
+.status-icon {
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.status-idle {
+  color: #4a7c59;
+}
+
+.status-scanning {
+  color: #c08b30;
+  background: rgba(255, 248, 230, 0.85);
+}
+
+.status-success {
+  color: #2d7a4f;
+  background: rgba(230, 255, 240, 0.85);
+}
+
+.status-hint {
+  display: block;
+  width: 100%;
+  font-size: 0.78rem;
+  font-weight: 400;
+  opacity: 0.75;
+  margin-top: 2px;
+  text-align: center;
+}
+
+.status-error {
+  color: #b94040;
+  background: rgba(255, 235, 235, 0.85);
+}
