@@ -1,71 +1,276 @@
-A small ML portfolio project: classify common **houseplants** from a photo.
+# 🌿 FloraWatch
+
+A small ML portfolio project for classifying common **houseplants** from a photo.
+
+FloraWatch combines a mobile-first React frontend with a TensorFlow/Keras machine learning backend. Users can take or upload a plant photo, receive model predictions, review the Top-3 suggestions, and access plant care information, fun facts, and toxicity warnings.
+
+🔗 **Live Demo:** [pablomedito.github.io/FloraWatchFrontend](https://pablomedito.github.io/FloraWatchFrontend/)
+
+![React](https://img.shields.io/badge/React-19-blue)
+![Vite](https://img.shields.io/badge/Vite-6-purple)
+![PWA](https://img.shields.io/badge/PWA-ready-green)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-Keras-orange)
+
+---
 
 ## Frontend
 
 The frontend is available here:
-🌿[pablomedito.github.io/FloraWatchFrontend](https://pablomedito.github.io/FloraWatchFrontend/)🌿
 
- More information about the frontend, and its functionalities can be found in the frontend repository:   
-https://github.com/PabloMediTo/FloraWatchFrontend 
+🌿 [pablomedito.github.io/FloraWatchFrontend](https://pablomedito.github.io/FloraWatchFrontend/) 🌿
+
+More information about the frontend and its functionality can be found in the frontend repository:
+
+[github.com/PabloMediTo/FloraWatchFrontend](https://github.com/PabloMediTo/FloraWatchFrontend)
+
+Frontend contributor:
+
+[github.com/PabloMediTo](https://github.com/PabloMediTo)
+
+---
 
 ## What it does
-- User uploads/takes a photo of a plant
+
+- User uploads or takes a photo of a plant
 - Model predicts the plant species
-- UI shows an **always-available Top-3** list (user decides which one matches best)
-- If the model is unsure: returns **Unknown** using a probability threshold
+- UI shows an **always-available Top-3** list
+- User can decide which prediction matches best
+- If the model is unsure, it returns **Unknown** using a probability threshold
+- App provides plant care tips, toxicity warnings, fun facts, and scan history
+
+---
+
+## Features
+
+- **Camera scanning** — live viewfinder with frame freeze on capture
+- **Photo upload** — pick from gallery as an alternative to the camera
+- **Plant identification** — identifies 23 common houseplant species
+- **Top-3 selection** — after each scan, choose from the 3 most likely matches before confirming
+- **Plant encyclopedia** — swipeable left-side drawer listing all supported species with thumbnails
+- **Plant detail view** — tap any plant for care info, toxicity badge, image, and fun facts
+- **Care tips** — watering, frequency, and sunlight recommendations with custom SVG icons
+- **Toxicity warnings** — pet safety badges: toxic, mildly toxic, or safe
+- **Fun facts** — “Did you know?” section with 4 facts per species and a refresh button
+- **Scan history** — recent scans stored in localStorage with plant thumbnails from Wikipedia
+- **Internationalization** — English, German, and Spanish
+- **PWA** — installable with offline support via service worker
+- **Haptic feedback** — vibration patterns for scan, success, and error states
+- **Torch / flashlight** — toggle the device flashlight for low-light scanning
+- **Swipe gestures** — drag result card, swipe drawer to dismiss, swipe detail panel to go back
 
 ---
 
 ## Dataset
-- Source: iNaturalist (photos + taxonomy labels)
+
+- Source: iNaturalist photos and taxonomy labels
 - Classes: **23** houseplant species
-- Target images per class: ~500 (minimum 200; classes below minimum are excluded)
-- Split: **Group split** by `observation_id` (fallback `observer_id`) to avoid leakage from near-duplicate photo series
+- Target images per class: approximately 500
+- Minimum images per class: 200
+- Classes below the minimum are excluded
+- Split: **group split** by `observation_id`, with fallback to `observer_id`
+
+The group split helps avoid data leakage from near-duplicate photo series between training and test data.
 
 ---
 
 ## Model
-- Backbone: **EfficientNetB0** (ImageNet pretrained)
+
+- Backbone: **EfficientNetB0**
+- Pretraining: ImageNet
+- Framework: TensorFlow / Keras
 - Transfer learning in 2 phases:
-  1) Train classifier head (backbone frozen)
-  2) Fine-tune last ~30% of backbone layers with a small learning rate
-- Important: uses **EfficientNet preprocessing** (`tf.keras.applications.efficientnet.preprocess_input`)
+  1. Train classifier head with the backbone frozen
+  2. Fine-tune the last ~30% of backbone layers with a small learning rate
+
+Important: the model uses EfficientNet preprocessing:
+
+```python
+tf.keras.applications.efficientnet.preprocess_input
+```
 
 ---
 
-## Evaluation (Test Set)
-Test set size: **1603 images** (group-split)
+## Evaluation
 
-- **Top-1 accuracy:** **0.8347** (≈ 83.5%)
-- **Top-3 accuracy:** **0.9407** (≈ 94.1%)
+Test set size: **1603 images** using group split.
 
-### Classification report (interpretation)
-- **precision**: when the model predicts a class, how often it’s correct
-- **recall**: among true samples of a class, how many were found
-- **f1-score**: balance of precision/recall
-- **support**: number of test images for the class
+| Metric | Score |
+|---|---:|
+| Top-1 accuracy | **0.8347** / ≈ 83.5% |
+| Top-3 accuracy | **0.9407** / ≈ 94.1% |
 
-### Confusion matrix & error analysis
-Generated by `src/evaluate.py` (saved under `models/eval/`):
-- `confusion_matrix_counts.png`
-- `confusion_matrix_normalized.png`
-- `most_confused_pairs.csv`
-- `classification_report.txt`
+### Classification report
 
-Most confused pairs (top examples):
-- **Epipremnum aureum → Philodendron hederaceum** (12)
-- **Ficus benjamina ↔ Ficus elastica** (8 / 5)
-- **Hoya carnosa → Peperomia obtusifolia** (6)
-- **Crassula ovata → Peperomia obtusifolia** (5)
+The classification report includes:
 
-These confusions are expected: the pairs are visually similar (leaf shape/texture).
+- **precision** — when the model predicts a class, how often it is correct
+- **recall** — among true samples of a class, how many were found
+- **f1-score** — balance between precision and recall
+- **support** — number of test images for the class
+
+### Confusion matrix and error analysis
+
+Generated by:
+
+```bash
+python src/evaluate.py
+```
+
+Saved under:
+
+```text
+models/eval/
+```
+
+Generated files:
+
+```text
+confusion_matrix_counts.png
+confusion_matrix_normalized.png
+most_confused_pairs.csv
+classification_report.txt
+```
+
+Most confused pairs:
+
+- **Epipremnum aureum → Philodendron hederaceum**: 12
+- **Ficus benjamina ↔ Ficus elastica**: 8 / 5
+- **Hoya carnosa → Peperomia obtusifolia**: 6
+- **Crassula ovata → Peperomia obtusifolia**: 5
+
+These confusions are expected because the species are visually similar, especially in leaf shape and texture.
 
 ---
 
-## Inference output & “Unknown” handling
-The model outputs a probability distribution over 23 classes (softmax).
+## Inference output and Unknown handling
+
+The model outputs a probability distribution over 23 classes using softmax.
+
 From that distribution:
-- **Top-3** = three highest probabilities (always returned)
-- **Unknown rule**: if `max_prob < 0.4` → return `"Unbekannte Pflanze"`
 
-Note: The frontend focuses on presenting **Top-3 suggestions** so the user can validate the prediction themselves, especially for visually similar plant species.
+- **Top-3** = the three highest probabilities
+- **Unknown rule**: if `max_prob < 0.4`, return `"Unbekannte Pflanze"`
+
+The frontend focuses on presenting **Top-3 suggestions** so the user can validate the prediction themselves, especially for visually similar plant species.
+
+---
+
+## Backend
+
+The app connects to a backend hosted on Render:
+
+```text
+https://florawatch-uwjf.onrender.com
+```
+
+The backend exposes:
+
+- `GET /warmup` — wakes up the server because the free Render tier spins down after inactivity
+- `POST /predict` — sends a `FormData` request with a `file` field and receives plant predictions
+
+Supported image formats:
+
+- JPEG
+- PNG
+
+To test the frontend without the backend, set:
+
+```javascript
+USE_MOCK = true
+```
+
+in:
+
+```text
+src/services/api.js
+```
+
+---
+
+## Frontend Tech Stack
+
+- **React 19**
+- **Vite 6**
+- **Motion for React** for animations and drag gestures
+- **Wikipedia REST API** for plant thumbnail images
+- **Custom SVG icons**
+- **PWA** with service worker support
+
+---
+
+## Frontend Performance
+
+The frontend is optimized for mobile devices:
+
+- **Code splitting** — `ResultCard` and `ScanHistory` are lazy-loaded
+- **Chunk splitting** — `react` and `motion` are split into separate cacheable bundles
+- **CSS animations** — vine sway uses GPU-accelerated CSS keyframes instead of JavaScript animation loops
+- **Reduced motion** — respects `prefers-reduced-motion`
+- **Adaptive camera** — lower resolution on mobile to reduce GPU and memory usage
+- **Optimized assets** — SVGs compressed with SVGO
+- **Mobile optimizations** — expensive `drop-shadow` and `backdrop-filter` effects disabled on mobile
+- **Font loading** — Google Font loaded via `<link>` with `preconnect`
+
+---
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+---
+
+## Frontend Project Structure
+
+```text
+src/
+├── components/       # React components: CameraScanner, ResultCard, PlantListModal, etc.
+├── data/             # Plant care data and fun facts for 23 species
+├── hooks/            # Custom hooks, for example usePlantImage
+├── i18n/             # Translations and language context: en, de, es
+├── services/         # API client and localStorage history
+└── App.jsx           # Main app component
+
+public/
+├── manifest.json     # PWA manifest
+├── sw.js             # Service worker
+└── icon.svg          # App icon
+```
+
+---
+
+## Supported plant species
+
+The model currently supports **23 common houseplant species**.
+
+The frontend includes multilingual plant data with:
+
+- common names
+- care tips
+- toxicity information
+- fun facts
+- thumbnail images
+
+---
+
+## Project goal
+
+FloraWatch is designed as a portfolio-grade machine learning project that demonstrates:
+
+- image classification with transfer learning
+- clean dataset splitting to avoid leakage
+- model evaluation with Top-1 and Top-3 accuracy
+- a mobile-first React frontend
+- backend integration for real-time predictions
+- user-friendly handling of uncertain predictions
