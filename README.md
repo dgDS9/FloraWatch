@@ -13,19 +13,14 @@ FloraWatch combines a mobile-first React frontend with a TensorFlow/Keras machin
 
 ---
 
-## Frontend
+## Website
 
-The frontend is available here:
-
+The website is available here:
 🌿 [pablomedito.github.io/FloraWatchFrontend](https://pablomedito.github.io/FloraWatchFrontend/) 🌿
 
-More information about the frontend and its functionality can be found in the frontend repository:
+Backend contributor: [github.com/dgDS9](https://github.com/dgDS9)
 
-[github.com/PabloMediTo/FloraWatchFrontend](https://github.com/PabloMediTo/FloraWatchFrontend)
-
-Frontend contributor:
-
-[github.com/PabloMediTo](https://github.com/PabloMediTo)
+Frontend contributor: [github.com/PabloMediTo](https://github.com/PabloMediTo)
 
 ---
 
@@ -185,19 +180,6 @@ in:
 src/services/api.js
 ```
 
----
-
-## Frontend Tech Stack
-
-- **React 19**
-- **Vite 6**
-- **Motion for React** for animations and drag gestures
-- **Wikipedia REST API** for plant thumbnail images
-- **Custom SVG icons**
-- **PWA** with service worker support
-
----
-
 ## Frontend Performance
 
 The frontend is optimized for mobile devices:
@@ -210,45 +192,6 @@ The frontend is optimized for mobile devices:
 - **Optimized assets** — SVGs compressed with SVGO
 - **Mobile optimizations** — expensive `drop-shadow` and `backdrop-filter` effects disabled on mobile
 - **Font loading** — Google Font loaded via `<link>` with `preconnect`
-
----
-
-## Getting Started
-
-```bash
-# Install dependencies
-npm install
-
-# Start dev server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
-
----
-
-## Frontend Project Structure
-
-```text
-src/
-├── components/       # React components: CameraScanner, ResultCard, PlantListModal, etc.
-├── data/             # Plant care data and fun facts for 23 species
-├── hooks/            # Custom hooks, for example usePlantImage
-├── i18n/             # Translations and language context: en, de, es
-├── services/         # API client and localStorage history
-└── App.jsx           # Main app component
-
-public/
-├── manifest.json     # PWA manifest
-├── sw.js             # Service worker
-└── icon.svg          # App icon
-```
-
----
 
 ## Supported plant species
 
