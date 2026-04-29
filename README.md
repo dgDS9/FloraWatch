@@ -16,7 +16,7 @@ FloraWatch combines a mobile-first React frontend with a TensorFlow/Keras machin
 The website is available here:
 🌿 [pablomedito.github.io/FloraWatchFrontend](https://pablomedito.github.io/FloraWatchFrontend/) 🌿
 
-Backend contributor: [github.com/dgDS9](https://github.com/dgDS9)
+AI Developer and Backend contributor: [github.com/dgDS9](https://github.com/dgDS9)
 
 Frontend contributor: [github.com/PabloMediTo](https://github.com/PabloMediTo)
 
