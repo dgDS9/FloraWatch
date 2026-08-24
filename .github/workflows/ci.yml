@@ -45,7 +45,6 @@ jobs:
         run: python -m compileall app/api
 
       - name: Run tests
-        working-directory: FloraWatch
         env:
           GEMINI_API_KEY: test-key
         run: |
