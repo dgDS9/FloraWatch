@@ -93,7 +93,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}
             ${{ env.IMAGE_NAME }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -118,6 +118,6 @@ jobs:
         run: |
           render deploys create \
             "${{ secrets.RENDER_DEV_SERVICE_ID }}" \
-            --image "${{ env.IMAGE_NAME }}:${{ github.sha }}" \
+            --image "${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}" \
             --wait \
             --confirm
