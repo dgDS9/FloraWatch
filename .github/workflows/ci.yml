@@ -17,7 +17,7 @@ permissions:
 #   cancel-in-progress: true
 
 env:
-  IMAGE_NAME: ghcr.io/dgds9/FloraWatch-backend
+  IMAGE_NAME: ghcr.io/dgds9/florawatch-backend
 
 jobs:
   backend-checks:
