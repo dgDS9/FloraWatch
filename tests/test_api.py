@@ -11,8 +11,7 @@ def test_health():
 
     assert response.status_code == 200
     assert response.json() == {
-        "status": "ok",
-        "service": "Florawatch Foto",
+        "status": "ok"
     }
 
 
@@ -21,8 +20,7 @@ def test_root():
 
     assert response.status_code == 200
     assert response.json() == {
-        "app": "api Florawatch Foto",
-        "status": "running",
+        "message": "FloraWatch API is running"
     }
 
 
