@@ -113,6 +113,12 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/render-oss/cli/main/bin/install.sh | sh
           echo "$HOME/.render/bin" >> "$GITHUB_PATH"
+          
+      - name: Show image to deploy
+        run: |
+          echo "Image built:"
+          echo "${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}"
+
 
       - name: Deploy image to Development
         run: |
