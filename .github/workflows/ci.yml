@@ -12,9 +12,9 @@ on:
 permissions:
   contents: read
 
-# concurrency:
-#   group: ci-${{ github.ref }}
-#   cancel-in-progress: true
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   IMAGE_NAME: ghcr.io/dgds9/florawatch-backend
