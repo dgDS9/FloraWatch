@@ -37,6 +37,6 @@ jobs:
         run: |
           render deploys create \
             "${{ secrets.RENDER_PROD_SERVICE_ID }}" \
-            --image "${{ env.IMAGE_NAME }}:${{ inputs.image_tag }}" \
+            --image "${{ env.IMAGE_NAME }}:staging" \
             --wait \
             --confirm

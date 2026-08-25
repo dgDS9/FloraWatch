@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  packages: write
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -158,3 +159,9 @@ jobs:
             --image "${{ env.IMAGE_NAME }}:${{ github.event.pull_request.head.sha }}" \
             --wait \
             --confirm
+
+      - name: Mark image as tested on Staging
+        run: |
+          docker buildx imagetools create \
+            --tag "${{ env.IMAGE_NAME }}:staging" \
+            "${{ env.IMAGE_NAME }}:${{ github.sha }}"
