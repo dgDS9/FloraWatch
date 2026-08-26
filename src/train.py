@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 from typing import Tuple
+import mlflow
 
 import numpy as np
 import pandas as pd
@@ -201,6 +202,23 @@ def main():
     ]
 
     # Phase 1: train head
+    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    mlflow.set_experiment("florawatch-classification")
+
+    with mlflow.start_run():
+
+        mlflow.log_params({
+            "model": "EfficientNetB0",
+            "img_size": args.img_size,
+            "batch_size": args.batch_size,
+            "epochs_head": args.epochs_head,
+            "epochs_finetune": args.epochs_finetune,
+            "lr_head": args.lr_head,
+            "lr_finetune": args.lr_finetune,
+            "seed": args.seed,
+            "num_classes": num_classes,
+        })
+
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=args.lr_head),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(),
@@ -244,10 +262,20 @@ def main():
         callbacks=callbacks,
     )
 
+    
     print("\n=== Test evaluation ===")
     best = tf.keras.models.load_model(model_dir / "best_model.keras")
     metrics = best.evaluate(ds_test, return_dict=True)
     print(metrics)
+
+    mlflow.log_metrics({
+        "test_loss": float(metrics["loss"]),
+        "test_accuracy": float(metrics["acc"]),
+        "test_top3_accuracy": float(metrics["top3"]),
+    })
+    
+    mlflow.log_artifact(str(model_dir / "best_model.keras"))
+    mlflow.log_artifact(str(mapping_path))
 
     print(f"Saved best model: {model_dir / 'best_model.keras'}")
     print(f"Saved label mapping: {mapping_path}")
