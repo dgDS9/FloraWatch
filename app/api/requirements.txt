@@ -6,3 +6,4 @@ tensorflow>=2.15
 pandas>=2.0
 numpy>=1.26
 httpx2
+scikit-learn
