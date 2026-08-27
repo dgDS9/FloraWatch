@@ -1,24 +1,50 @@
 from __future__ import annotations
 
 import io
+import os
 from pathlib import Path
 from typing import List, Dict, Any
 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from fastapi import FastAPI, File, UploadFile, Query
+from fastapi import (
+    FastAPI,
+    File,
+    UploadFile,
+    Query,
+    HTTPException,
+)
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 
+from pydantic import BaseModel
+
+
+from app.api.monitoring import (
+    log_prediction,
+    log_feedback,
+    get_monitoring_summary,
+)
+
 
 # ---------- Config ----------
-BASE_DIR = Path(__file__).resolve().parents[2]   # geht von app/api/main.py zum Repo-Root
+BASE_DIR = Path(__file__).resolve().parents[2]
 MODEL_PATH = BASE_DIR / "models" / "best_model.keras"
 LABELS_PATH = BASE_DIR / "models" / "label_mapping.csv"
+
 IMG_SIZE = 224
 DEFAULT_THRESHOLD = 0.40
 
+MODEL_VERSION = os.getenv(
+    "MODEL_VERSION",
+    "unknown",
+)
+
+
+class FeedbackRequest(BaseModel):
+    prediction_id: str
+    true_label: str
 
 # ---------- App ----------
 app = FastAPI(title="Plant Recognition API", version="1.0")
@@ -128,11 +154,69 @@ async def predict(
     top1 = top3[0]
     is_unknown = top1["probability"] < threshold
 
+    prediction = (
+        "Unbekannte Pflanze"
+        if is_unknown
+        else top1["label"]
+    )
+
+    # ---------- Production Monitoring ----------
+    prediction_id = log_prediction(
+        prediction=prediction,
+        top1=top1,
+        top3=top3,
+        unknown=is_unknown,
+        threshold=threshold,
+        model_version=MODEL_VERSION,
+    )
+
     return {
         "filename": file.filename,
         "threshold": threshold,
         "unknown": bool(is_unknown),
-        "prediction": "Unbekannte Pflanze" if is_unknown else top1["label"],
+        "prediction": prediction,
         "top1": top1,
         "top3": top3,  # always returned -> frontend can show collapsed
+    }
+
+
+@app.get("/monitoring")
+def monitoring() -> Dict[str, Any]:
+
+    return get_monitoring_summary()
+
+
+@app.post("/feedback")
+def feedback(
+    feedback: FeedbackRequest,
+) -> Dict[str, Any]:
+
+    if labels is None:
+        raise RuntimeError("Labels not loaded")
+
+    valid_labels = set(labels)
+    valid_labels.add("Unbekannte Pflanze")
+
+    if feedback.true_label not in valid_labels:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid true_label",
+        )
+
+    try:
+        log_feedback(
+            prediction_id=feedback.prediction_id,
+            true_label=feedback.true_label,
+        )
+
+    except KeyError:
+        raise HTTPException(
+            status_code=404,
+            detail="Prediction ID not found",
+        )
+
+    return {
+        "status": "feedback saved",
+        "prediction_id": feedback.prediction_id,
+        "true_label": feedback.true_label,
     }

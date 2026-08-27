@@ -1,0 +1,4 @@
+{
+  "finetune_val_accuracy": 0.89,
+  "finetune_val_top3": 0.97
+}
