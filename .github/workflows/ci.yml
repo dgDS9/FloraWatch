@@ -51,11 +51,30 @@ jobs:
           pip install pytest
           python -m pytest -v
 
+  model-quality-gate:
+    name: Model Quality Gate
+    runs-on: ubuntu-latest
+    needs: backend-checks
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: "3.12"
+
+    - name: Check model quality
+      run: python src/quality_gate.py
+
 
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest
-    needs: backend-checks
+    needs: 
+    - backend-checks
+    - model-quality-gate
 
     permissions:
       contents: read
