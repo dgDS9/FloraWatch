@@ -4,12 +4,24 @@ import argparse
 from pathlib import Path
 from typing import Tuple
 import mlflow
+import json
 
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 from sklearn.model_selection import StratifiedGroupKFold
 from sklearn.utils.class_weight import compute_class_weight
+
+import tempfile
+import matplotlib.pyplot as plt
+
+from sklearn.metrics import (
+    precision_score,
+    recall_score,
+    f1_score,
+    confusion_matrix,
+    ConfusionMatrixDisplay,
+)
 
 
 def read_csv_robust(path: Path) -> pd.DataFrame:
@@ -142,6 +154,59 @@ def build_model(num_classes: int, img_size: int):
     model = tf.keras.Model(inputs=inputs, outputs=outputs, name="plant_classifier_effnetb0")
     return model, backbone
 
+class MLflowMetricsCallback(
+    tf.keras.callbacks.Callback
+):
+    """
+    Logs Keras metrics after every epoch
+    into the currently active MLflow run.
+    """
+
+    def __init__(
+        self,
+        phase: str,
+    ):
+        super().__init__()
+        self.phase = phase
+
+    def on_epoch_end(
+        self,
+        epoch,
+        logs=None,
+    ):
+        logs = logs or {}
+
+        for metric_name, value in logs.items():
+
+            if value is None:
+                continue
+
+            mlflow.log_metric(
+                f"{self.phase}_{metric_name}",
+                float(value),
+                step=epoch + 1,
+            )
+
+        # Also log current learning rate
+        learning_rate = (
+            self.model.optimizer.learning_rate
+        )
+
+        try:
+            learning_rate = float(
+                tf.keras.backend.get_value(
+                    learning_rate
+                )
+            )
+
+            mlflow.log_metric(
+                f"{self.phase}_learning_rate",
+                learning_rate,
+                step=epoch + 1,
+            )
+
+        except Exception:
+            pass
 
 def main():
     parser = argparse.ArgumentParser()
@@ -190,7 +255,7 @@ def main():
 
     model, backbone = build_model(num_classes=num_classes, img_size=args.img_size)
 
-    callbacks = [
+    common_callbacks = [
         tf.keras.callbacks.ModelCheckpoint(
             filepath=str(model_dir / "best_model.keras"),
             monitor="val_acc",
@@ -201,84 +266,219 @@ def main():
         tf.keras.callbacks.ReduceLROnPlateau(monitor="val_acc", factor=0.5, patience=2, min_lr=1e-6),
     ]
 
-    # Phase 1: train head
-    mlflow.set_tracking_uri("http://127.0.0.1:5000")
-    mlflow.set_experiment("florawatch-classification")
 
+
+   # --------------------------------------------------
+    # MLflow
+    # --------------------------------------------------
+
+    mlflow.set_tracking_uri(
+        "http://127.0.0.1:5000"
+    )
+
+    mlflow.set_experiment(
+        "florawatch-classification"
+    )
+
+    # Everything belonging to ONE training
+    # is now inside ONE MLflow run.
     with mlflow.start_run():
 
-        mlflow.log_params({
-            "model": "EfficientNetB0",
-            "img_size": args.img_size,
-            "batch_size": args.batch_size,
-            "epochs_head": args.epochs_head,
-            "epochs_finetune": args.epochs_finetune,
-            "lr_head": args.lr_head,
-            "lr_finetune": args.lr_finetune,
-            "seed": args.seed,
-            "num_classes": num_classes,
+        # ----------------------------------------------
+        # Log hyperparameters / configuration
+        # ----------------------------------------------
+
+        mlflow.log_params(
+            {
+                "model": "EfficientNetB0",
+                "img_size": args.img_size,
+                "batch_size": args.batch_size,
+                "epochs_head":args.epochs_head,
+                "epochs_finetune":args.epochs_finetune,
+                "lr_head":args.lr_head,
+                "lr_finetune":args.lr_finetune,
+                "seed":args.seed,
+                "num_classes":num_classes,
+
+                # Additional fixed settings
+                "dropout":0.25,
+                "rotation":0.05,
+                "unfreeze_fraction":0.30,
+                "shuffle_buffer":2048,
+
+                # Dataset information
+                "train_samples":len(df_train),
+                "val_samples":len(df_val),
+                "test_samples":len(df_test),
+            })
+
+
+        # Phase 1: train head
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=args.lr_head),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+            metrics=[
+                tf.keras.metrics.SparseCategoricalAccuracy(name="acc"),
+                tf.keras.metrics.SparseTopKCategoricalAccuracy(k=3, name="top3"),
+            ],
+        )
+
+        print("\n=== Phase 1: Train head (backbone frozen) ===")
+        model.fit(
+            ds_train,
+            validation_data=ds_val,
+            epochs=args.epochs_head,
+            class_weight=class_weight,
+            callbacks=[
+                *common_callbacks,
+                MLflowMetricsCallback(
+                    phase="head"
+                ),
+            ],
+        )
+
+        # Phase 2: fine-tune last part of backbone
+        print("\n=== Phase 2: Fine-tune (partial unfreeze) ===")
+        backbone.trainable = True
+        n_layers = len(backbone.layers)
+        freeze_until = int(n_layers * 0.70)  # unfreeze last 30%
+        for i, layer in enumerate(backbone.layers):
+            layer.trainable = i >= freeze_until
+
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=args.lr_finetune),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+            metrics=[
+                tf.keras.metrics.SparseCategoricalAccuracy(name="acc"),
+                tf.keras.metrics.SparseTopKCategoricalAccuracy(k=3, name="top3"),
+            ],
+        )
+
+        history_finetune = model.fit(
+            ds_train,
+            validation_data=ds_val,
+            epochs=args.epochs_finetune,
+            class_weight=class_weight,
+            callbacks=[
+                *common_callbacks,
+                MLflowMetricsCallback(phase="finetune"),
+            ],
+        )
+
+
+        best_epoch = int(np.argmax(history_finetune.history["val_acc"]))
+
+        finetune_val_accuracy = float(
+            history_finetune.history["val_acc"][best_epoch]
+        )
+
+        finetune_val_top3 = float(
+            history_finetune.history["val_top3"][best_epoch]
+        )
+
+        evaluation_metrics = {
+            "finetune_val_accuracy": finetune_val_accuracy,
+            "finetune_val_top3": finetune_val_top3,
+        }
+
+        metrics_path = model_dir / "evaluation_metrics.json"
+
+        with open(metrics_path, "w", encoding="utf-8") as file:
+            json.dump(evaluation_metrics, file, indent=2)
+
+        print(f"Saved evaluation metrics: {metrics_path}")
+        
+        print("\n=== Test evaluation ===")
+        best = tf.keras.models.load_model(model_dir / "best_model.keras")
+        metrics = best.evaluate(ds_test, return_dict=True)
+        # Vorhersagen für das Testset
+        y_true = (
+            df_test["species"]
+            .map(class_to_idx)
+            .astype(int)
+            .to_numpy()
+        )
+
+        y_prob = best.predict(ds_test, verbose=0)
+        y_pred = np.argmax(y_prob, axis=1)
+
+        # Zusätzliche Klassifikationsmetriken
+        test_precision_macro = precision_score(
+            y_true,
+            y_pred,
+            average="macro",
+            zero_division=0,
+        )
+
+        test_recall_macro = recall_score(
+            y_true,
+            y_pred,
+            average="macro",
+            zero_division=0,
+        )
+
+        test_f1_macro = f1_score(
+            y_true,
+            y_pred,
+            average="macro",
+            zero_division=0,
+        )
+        print(metrics)
+
+        mlflow.log_metrics({
+            "test_loss": float(metrics["loss"]),
+            "test_accuracy": float(metrics["acc"]),
+            "test_top3_accuracy": float(metrics["top3"]),
+            "test_precision_macro": float(test_precision_macro),
+            "test_recall_macro": float(test_recall_macro),
+            "test_f1_macro": float(test_f1_macro),
         })
 
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=args.lr_head),
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-        metrics=[
-            tf.keras.metrics.SparseCategoricalAccuracy(name="acc"),
-            tf.keras.metrics.SparseTopKCategoricalAccuracy(k=3, name="top3"),
-        ],
-    )
+        cm = confusion_matrix(
+            y_true,
+            y_pred,
+            labels=np.arange(num_classes),
+        )
 
-    print("\n=== Phase 1: Train head (backbone frozen) ===")
-    model.fit(
-        ds_train,
-        validation_data=ds_val,
-        epochs=args.epochs_head,
-        class_weight=class_weight,
-        callbacks=callbacks,
-    )
+        fig, ax = plt.subplots(figsize=(14, 14))
 
-    # Phase 2: fine-tune last part of backbone
-    print("\n=== Phase 2: Fine-tune (partial unfreeze) ===")
-    backbone.trainable = True
-    n_layers = len(backbone.layers)
-    freeze_until = int(n_layers * 0.70)  # unfreeze last 30%
-    for i, layer in enumerate(backbone.layers):
-        layer.trainable = i >= freeze_until
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=cm,
+            display_labels=classes,
+        )
 
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=args.lr_finetune),
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-        metrics=[
-            tf.keras.metrics.SparseCategoricalAccuracy(name="acc"),
-            tf.keras.metrics.SparseTopKCategoricalAccuracy(k=3, name="top3"),
-        ],
-    )
+        disp.plot(
+            ax=ax,
+            xticks_rotation=90,
+            values_format="d",
+            colorbar=False,
+        )
 
-    model.fit(
-        ds_train,
-        validation_data=ds_val,
-        epochs=args.epochs_finetune,
-        class_weight=class_weight,
-        callbacks=callbacks,
-    )
+        fig.tight_layout()
 
-    
-    print("\n=== Test evaluation ===")
-    best = tf.keras.models.load_model(model_dir / "best_model.keras")
-    metrics = best.evaluate(ds_test, return_dict=True)
-    print(metrics)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            confusion_matrix_path = (
+                Path(tmp_dir) / "confusion_matrix.png"
+            )
 
-    mlflow.log_metrics({
-        "test_loss": float(metrics["loss"]),
-        "test_accuracy": float(metrics["acc"]),
-        "test_top3_accuracy": float(metrics["top3"]),
-    })
-    
-    mlflow.log_artifact(str(model_dir / "best_model.keras"))
-    mlflow.log_artifact(str(mapping_path))
+            fig.savefig(
+                confusion_matrix_path,
+                dpi=180,
+                bbox_inches="tight",
+            )
 
-    print(f"Saved best model: {model_dir / 'best_model.keras'}")
-    print(f"Saved label mapping: {mapping_path}")
+            mlflow.log_artifact(
+                str(confusion_matrix_path),
+                artifact_path="evaluation",
+            )
+
+        plt.close(fig)
+        
+        mlflow.log_artifact(str(model_dir / "best_model.keras"))
+        mlflow.log_artifact(str(mapping_path))
+
+        print(f"Saved best model: {model_dir / 'best_model.keras'}")
+        print(f"Saved label mapping: {mapping_path}")
 
 
 if __name__ == "__main__":
